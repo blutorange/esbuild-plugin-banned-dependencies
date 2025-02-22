@@ -1,6 +1,6 @@
 {
   "name": "@xenorange/esbuild-plugin-banned-dependencies",
-  "version": "1.0.0-SNAPSHOT",
+  "version": "1.0.0",
   "description": "esbuild plugin for banning specific dependencies from the bundle. Throws an error if a banned dependencies is loaded.",
   "type": "module",
   "main": "index.js",

@@ -17,7 +17,9 @@ await esbuild.build({
   plugins: [
     bannedDependenciesPlugin({
       bannedDependencies: [
+        // Specify a regexp to test against the import specifier
         { pattern: /jquery/ },
+        // Reason is optional
         { pattern: /moment/, reason: "moment is deprecated" },
       ],
     }),
