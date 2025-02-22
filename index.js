@@ -29,7 +29,7 @@ const PluginName = "banned-dependencies-plugin";
 * @returns {string | undefined} The reason for banning the dependency, if any.
 */
 function findReason(bannedDependencies, path) {
-	return bannedDependencies.find(({ pattern }) => pattern.test(path))?.reason;
+  return bannedDependencies.find(({ pattern }) => pattern.test(path))?.reason;
 }
 
 /**
@@ -42,7 +42,7 @@ function findReason(bannedDependencies, path) {
  * keys.
  */
 function comparingBy(keyExtractor, keyComparator) {
-	return (v1, v2) => keyComparator(keyExtractor(v1), keyExtractor(v2));
+  return (v1, v2) => keyComparator(keyExtractor(v1), keyExtractor(v2));
 }
 
 /**
@@ -52,9 +52,9 @@ function comparingBy(keyExtractor, keyComparator) {
  * @returns {number} The result of the comparison.
  */
 function compareIgnoreCase(s1, s2) {
-	const i1 = s1.toLowerCase();
-	const i2 = s2.toLowerCase();
-	return i1 < i2 ? -1 : i1 > i2 ? 1 : 0;
+  const i1 = s1.toLowerCase();
+  const i2 = s2.toLowerCase();
+  return i1 < i2 ? -1 : i1 > i2 ? 1 : 0;
 }
 
 /**
@@ -64,31 +64,31 @@ function compareIgnoreCase(s1, s2) {
  * @returns {Plugin} A new esbuild plugin for banning certain dependencies.
  */
 export function bannedDependenciesPlugin(options) {
-	const filter = new RegExp(`(${options.bannedDependencies.map(x => x.pattern.source).join(')|(')})`);
-	return {
-		name: PluginName,
-		setup: build => {
-			const errors = new Map();
-			build.onResolve(
-				{ filter },
-				args => {
-					const reason = findReason(options.bannedDependencies, args.path);
-					const message = reason !== undefined
-						? `Dependency '${args.path}' is banned: ${reason}`
-						: `Dependency '${args.path}' is banned`;
-					errors.set(args.path, message);
-					return undefined;
-				},
-			);
-			build.onEnd(() => {
-				return {
-					errors: [...errors.entries()]
-						.sort(comparingBy(([key]) => key, compareIgnoreCase))
-						.map(([_, message]) => message)
-						.map((message => ({ text: message }))),
-				};
-			});
-		},
-	};
+  const filter = new RegExp(`(${options.bannedDependencies.map(x => x.pattern.source).join(')|(')})`);
+  return {
+    name: PluginName,
+    setup: build => {
+      const errors = new Map();
+      build.onResolve(
+        { filter },
+        args => {
+          const reason = findReason(options.bannedDependencies, args.path);
+          const message = reason !== undefined
+            ? `Dependency '${args.path}' is banned: ${reason}`
+            : `Dependency '${args.path}' is banned`;
+          errors.set(args.path, message);
+          return undefined;
+        },
+      );
+      build.onEnd(() => {
+        return {
+          errors: [...errors.entries()]
+            .sort(comparingBy(([key]) => key, compareIgnoreCase))
+            .map(([_, message]) => message)
+            .map((message => ({ text: message }))),
+        };
+      });
+    },
+  };
 };
 
